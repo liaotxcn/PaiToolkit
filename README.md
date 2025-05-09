@@ -1,4 +1,4 @@
-# PaiToolkit
+# PaiToolkit-基于Golang的资源嗅探下载器 
 
 <div align="center">  
 
@@ -9,8 +9,7 @@
 ---
 
 ## 📂 项目结构  
-
-### **Downloader-基于Golang的自嗅探下载器**   
+ 
 - **`downloader.go 主文件`**
 - **`download_data.go 下载文件存放目录`**
 - **`logs 日志存放`**
