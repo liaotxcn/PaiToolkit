@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="PaiDownloader 资源嗅探下载器，支持多种文件类型嗅探下载。">
+        <link rel="icon" href="../static/favicon.ico" type="image/x-icon">
+        <title>PaiDownloader</title>
+        <link rel="stylesheet" type="text/css" href="../static/css/index.css">
+    </head>
+<body>
+<div class="container">
+    <header>
+        <h1>PaiDownloader V1.0.0</h1>
+    </header>
+
+    <div class="main-content">
+        <div class="input-section">
+            <label for="urlInput">目标网址</label>
+            <input type="text" id="urlInput" placeholder="请输入要下载资源的网址">
+        </div>
+
+        <div class="file-types">
+            <h3>选择文件类型:</h3>
+            <div class="file-types-list">
+                <label><input type="checkbox" value="image" checked> 图片</label>
+                <label><input type="checkbox" value="script" checked> 脚本</label>
+                <label><input type="checkbox" value="style" checked> 样式表</label>
+                <label><input type="checkbox" value="video" checked> 视频</label>
+                <label><input type="checkbox" value="audio" checked> 音频</label>
+                <label><input type="checkbox" value="font" checked> 字体</label>
+                <label><input type="checkbox" value="document" checked> 文档</label>
+                <label><input type="checkbox" value="archive" checked> 压缩包</label>
+                <label><input type="checkbox" value="html" checked> HTML</label>
+                <label><input type="checkbox" value="data" checked> 数据文件</label>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button id="downloadBtn">开始下载</button>
+            <button id="previewBtn">预览资源</button>
+            <button onclick="window.location.href='/history'">历史记录</button>
+        </div>
+
+        <div class="file-list-container" id="fileListContainer">
+            <h3>检测到资源:</h3>
+            <ul class="file-list" id="fileList"></ul>
+        </div>
+
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-header">
+                <h2>下载进度</h2>
+            </div>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="progress-stats">
+                <div class="progress-stat">
+                    <div class="progress-stat-value" id="completedTasks">0</div>
+                    <div class="progress-stat-label">完成</div>
+                </div>
+                <div class="progress-stat">
+                    <div class="progress-stat-value" id="totalTasks">0</div>
+                    <div class="progress-stat-label">总任务</div>
+                </div>
+                <div class="progress-stat">
+                    <div class="progress-stat-value" id="failedTasks">0</div>
+                    <div class="progress-stat-label">失败</div>
+                </div>
+                <div class="progress-stat">
+                    <div class="progress-stat-value" id="downloadRate">0</div>
+                    <div class="progress-stat-label">速率 (任务/秒)</div>
+                </div>
+            </div>
+
+            <ul class="task-list" id="taskList"></ul>
+        </div>
+
+        <button id="cancelBtn" style="display: none;">取消下载</button>
+    </div>
+</div>
+<script src="../static/js/index.js"></script>
+</body>
+</html>
