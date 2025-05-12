@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>下载历史 - PaiDownloader</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/index.css">
+    <style>
+        .history-container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .history-item {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            transition: transform 0.2s;
+        }
+
+        .history-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .status-running { background-color: #3498db; color: white; }
+        .status-completed { background-color: #2ecc71; color: white; }
+        .status-cancelled { background-color: #e74c3c; color: white; }
+
+        .time-info {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>下载历史记录</h1>
+    </header>
+
+    <div class="history-container">
+        <div class="history-header">
+            <h2>最近下载任务</h2>
+            <button onclick="window.location.href='/'">返回</button>
+        </div>
+        <div id="historyList"></div>
+    </div>
+</div>
+<script src="../static/js/history.js"></script>
+</body>
+</html>
