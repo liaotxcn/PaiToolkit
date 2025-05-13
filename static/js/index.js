@@ -45,9 +45,9 @@ document.addEventListener('DOMContentLoaded', function() {
             showAlert('请输入有效的网址', 'warning');
             return;
         }
-        showLoading();
+    
         const fileTypes = getSelectedFileTypes();
-
+    
         fetch('/preview', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -55,21 +55,50 @@ document.addEventListener('DOMContentLoaded', function() {
         })
             .then(handleResponse)
             .then(data => {
-                hideLoading();
                 if (data.data?.tasks?.length > 0) {
                     previewedFiles = data.data.tasks;
                     renderFileList(previewedFiles);
                     fileListContainer.style.display = 'block';
-                } else {
-                    showAlert('未找到任何资源', 'info');
-                }
-            })
-            .catch(error => {
-                hideLoading();
-                handleError(error);
-            });
+                    // 统计资源分类数量
+                const countMap = countResourceTypes(previewedFiles);
+                renderResourceCount(countMap);
+            } else {
+                showAlert('未找到任何资源', 'info');
+            }
+        })
+        .catch(handleError);
     });
 
+// 统计资源分类数量
+function countResourceTypes(tasks) {
+    const countMap = {};
+    tasks.forEach(task => {
+        if (task.type) {
+            if (countMap[task.type]) {
+                countMap[task.type]++;
+            } else {
+                countMap[task.type] = 1;
+            }
+        }
+    });
+    return countMap;
+}
+
+// 渲染资源分类统计信息
+function renderResourceCount(countMap) {
+    const resourceCountList = document.getElementById('resourceCountList');
+    if (Object.keys(countMap).length === 0) {
+        resourceCountList.innerHTML = '<li>暂无分类统计信息</li>';
+        return;
+    }
+    resourceCountList.innerHTML = Object.entries(countMap).map(([type, count]) => `
+        <li>
+            <span>${type}:</span>
+            <span>${count} 个</span>
+        </li>
+    `).join('');
+}
+    
     // 开始下载
     downloadBtn.addEventListener('click', function() {
         const url = urlInput.value.trim();
@@ -195,6 +224,10 @@ document.addEventListener('DOMContentLoaded', function() {
             eventSource.close();
             resetDownloadUI();
             showAlert('下载任务完成!', 'success');
+
+        // 下载完成后统计并渲染资源分类
+        const countMap = countResourceTypes(progress.tasks);
+        renderResourceCount(countMap);
         }
     }
 
