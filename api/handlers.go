@@ -1,4 +1,3 @@
-
 package api
 
 import (
@@ -62,15 +61,20 @@ type APIResponse struct {
 // 历史记录结构体
 // DownloadHistory 存储每次下载任务的详细信息
 type DownloadHistory struct {
-	ID        string    `json:"id"`         // 下载任务的唯一标识
-网站string    `json:"url"`        // 下载的目标 URL
-	FileTypes []string  `json:"file_types"` // 下载的文件类型
-	StartTime time.Time `json:"start_time"` // 下载任务开始时间
-	EndTime   time.Time `json:"end_time"`   // 下载任务结束时间
-	Total     int       `json:"total"`      // 总下载任务数
-	Completed int       `json:"completed"`  // 已完成的下载任务数
-	Failed    int       `json:"failed"`     // 失败的下载任务数
-状态string    `json:"status"`     // 下载任务的状态，如 "in_progress", "completed", "failed"
+网站string    `json:"url"`
+	Filename     string    `json:"filename"`
+类型string    `json:"type"`
+	Size         int64     `json:"size"`
+状态string    `json:"status"`
+	StartTime    time.Time `json:"start_time"`
+	EndTime      time.Time `json:"end_time"`
+	RetryCount   int       `json:"retry_count"`
+	LastModified time.Time `json:"last_modified"`
+	ID           string    `json:"id"`
+	FileTypes    []string  `json:"file_types"`
+	Total        int       `json:"total"`
+	Completed    int       `json:"completed"`
+	Failed       int       `json:"failed"`
 }
 
 // HandleDownloadRequest 处理下载请求，解析请求参数，初始化下载任务并启动下载
@@ -455,11 +459,12 @@ func loadDownloadHistory() {
 }
 
 // saveDownloadHistory 将下载历史记录保存到文件中
-func saveDownloadHistory() {
-	// 将下载历史记录转换为格式化的 JSON 数据
-	data, _ := json.MarshalIndent(downloadHistory, "", "  ")
-	// 将 JSON 数据写入文件
-	os.WriteFile(historyFilePath, data, 0644)
+func saveDownloadHistory() error {
+	data, err := json.Marshal(downloadHistory)
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(historyFilePath, data, 0644)
 }
 
 // HandleGetHistory 处理获取下载历史记录的请求，返回下载历史记录信息
@@ -506,11 +511,9 @@ func HandleHistoryPage(c *gin.Context) {
 
 // updateDownloadHistory 更新指定 ID 的下载历史记录信息，并保存到文件中
 func updateDownloadHistory(historyID string, completed, failed int, status string) {
-	// 加锁保护 downloadHistory 的并发访问
 	historyLock.Lock()
 	defer historyLock.Unlock()
 
-	// 遍历下载历史记录，找到指定 ID 的记录并更新
 	for i, history := range downloadHistory {
 		if history.ID == historyID {
 			downloadHistory[i].Completed = completed
@@ -519,8 +522,12 @@ func updateDownloadHistory(historyID string, completed, failed int, status strin
 			if status == "completed" || status == "failed" {
 				downloadHistory[i].EndTime = time.Now()
 			}
-			// 保存更新后的历史记录到文件
-			saveDownloadHistory()
+			if err := saveDownloadHistory(); err != nil {
+				_, logErr := fmt.Fprintf(downloader.LogFile, "保存历史记录失败: %v\n", err)
+				if logErr != nil {
+					fmt.Printf("写入日志文件失败: %v\n", logErr)
+				}
+			}
 			break
 		}
 	}
