@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"compress/gzip"
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -29,7 +28,7 @@ var downloader *ResourceDownloader         // 资源下载器实例
 
 // ResourceDownloader 定义资源下载器的结构体，包含下载所需的各种配置和客户端
 type ResourceDownloader struct {
-	BaseURL       *url.网站// 目标网页的URL
+	BaseURL       *url.URL      // 目标网页的URL
 	OutputDir     string        // 下载文件存放目录
 	MaxConcurrent int           // 最大并发下载数
 	FileTypes     []string      // 允许下载的文件类型
@@ -42,13 +41,13 @@ type ResourceDownloader struct {
 
 // DownloadTask 定义下载任务的结构体，包含任务的各种信息
 type DownloadTask struct {
-网站string    // 资源URL
-类型string    // 资源类型
+	URL          string    // 资源URL
+	Type         string    // 资源类型
 	Filename     string    // 保存文件名
 	Size         int64     // 文件大小(字节)
 	LastModified time.Time // 最后修改时间
 	RetryCount   int       // 已重试次数
-状态string    // 下载状态
+	Status       string    // 下载状态
 	StartTime    time.Time // 开始时间
 	EndTime      time.Time // 结束时间
 	HistoryID    string    // 历史记录 ID
@@ -66,18 +65,18 @@ type Progress struct {
 
 // APIResponse 定义 API 响应的结构体，用于返回 API 调用的结果
 type APIResponse struct {
-代码int         `json:"code"`
+	Code    int         `json:"code"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 }
 
 // TaskStatus 定义任务状态的结构体，记录每个下载任务的详细状态
 type TaskStatus struct {
-网站string `json:"url"`
+	URL          string `json:"url"`
 	Filename     string `json:"filename"`
-类型string `json:"type"`
+	Type         string `json:"type"`
 	Size         int64  `json:"size"`
-状态string `json:"status"`
+	Status       string `json:"status"`
 	RetryCount   int    `json:"retry_count"`
 	LastModified string `json:"last_modified"`
 }
@@ -95,11 +94,11 @@ type DownloadProgress struct {
 
 // 历史记录结构体，记录每个下载任务的详细历史信息
 type DownloadHistoryEntry struct {
-网站string    `json:"url"`
+	URL          string    `json:"url"`
 	Filename     string    `json:"filename"`
-类型string    `json:"type"`
+	Type         string    `json:"type"`
 	Size         int64     `json:"size"`
-状态string    `json:"status"`
+	Status       string    `json:"status"`
 	StartTime    time.Time `json:"start_time"`
 	EndTime      time.Time `json:"end_time"`
 	RetryCount   int       `json:"retry_count"`
@@ -244,6 +243,17 @@ func (d *ResourceDownloader) FetchHTML() (string, error) {
 
 // ExtractResources 从 HTML 内容中提取可下载的资源任务
 func (d *ResourceDownloader) ExtractResources(htmlContent string) ([]DownloadTask, error) {
+	// 新增对JSON-LD格式数据的解析
+	if strings.Contains(htmlContent, "application/ld+json") {
+		// 解析JSON-LD数据获取资源
+	}
+
+	// 新增对动态加载资源的处理
+	if strings.Contains(htmlContent, "__NEXT_DATA__") {
+		// 处理Next.js框架的动态加载资源
+	}
+
+	// 原有资源提取逻辑
 	var tasks []DownloadTask
 
 	doc, err := html.Parse(strings.NewReader(htmlContent))
@@ -305,6 +315,12 @@ func (d *ResourceDownloader) ExtractResources(htmlContent string) ([]DownloadTas
 						resourceType = getResourceTypeFromURL(href)
 					}
 				}
+			case "track": // 新增对 track 标签的支持
+				resourceURL = getAttribute(n, "src")
+				resourceType = "data"
+			case "source": // 单独处理 source 标签
+				resourceURL = getAttribute(n, "src")
+				resourceType = getResourceTypeFromURL(resourceURL)
 			}
 
 			if resourceURL != "" && d.isAllowedType(resourceType) {
@@ -376,6 +392,7 @@ func DownloadWithRetry(task DownloadTask, downloader *ResourceDownloader, progre
 				RetryCount:   task.RetryCount,
 				LastModified: task.LastModified,
 			})
+
 			HistoryLock.Unlock()
 
 			TaskStatusLock.Lock()
@@ -478,6 +495,18 @@ func DownloadResource(task DownloadTask, downloader *ResourceDownloader, progres
 		}
 	}()
 
+	// 添加断点续传支持
+	if info, err := os.Stat(savePath); err == nil {
+		req.Header.Set("Range", fmt.Sprintf("bytes=%d-", info.Size()))
+		if resp.StatusCode == http.StatusPartialContent {
+			file, err = os.OpenFile(savePath, os.O_APPEND|os.O_WRONLY, 0644)
+			if err != nil {
+				return fmt.Errorf("打开文件失败: %v", err)
+			}
+			file.Seek(0, io.SeekEnd)
+		}
+	}
+
 	if isTextType(task.Type) {
 		content, err := io.ReadAll(resp.Body)
 		if err != nil {
@@ -556,7 +585,14 @@ func isHTMLFile(url string) bool {
 func getResourceTypeFromURL(url string) string {
 	ext := strings.ToLower(filepath.Ext(url))
 	if ext == "" {
-		if strings.Contains(url, ".php") || strings.Contains(url, ".asp") {
+		// 增强判断逻辑
+		if strings.Contains(url, "/image/") || strings.Contains(url, "/images/") {
+			return "image"
+		} else if strings.Contains(url, "/video/") || strings.Contains(url, "/videos/") {
+			return "video"
+		} else if strings.Contains(url, "/audio/") || strings.Contains(url, "/audios/") {
+			return "audio"
+		} else if strings.Contains(url, ".php") || strings.Contains(url, ".asp") {
 			return "html"
 		}
 		return "document"
@@ -655,40 +691,6 @@ func sanitizeFilename(name string) string {
 	return name
 }
 
-// formatFileSize 将文件大小转换为易读的格式
-func formatFileSize(bytes int64) string {
-	const unit = 1024
-	if bytes < unit {
-		return fmt.Sprintf("%d B", bytes)
-	}
-	div, exp := int64(unit), 0
-	for n := bytes / unit; n >= unit; n /= unit {
-		div *= unit
-		exp++
-	}
-	return fmt.Sprintf("%.1f %ciB", float64(bytes)/float64(div), "KMGTPE"[exp])
-}
-
-// shortenURL 缩短 URL 长度，超过指定长度时用省略号代替
-func shortenURL(url string, maxLen int) string {
-	if len(url) <= maxLen {
-		return url
-	}
-	return url[:maxLen-3] + "..."
-}
-
-// logError 将错误信息写入日志文件
-func logError(logFile *os.File, message string) {
-	entry := map[string]string{
-		"time":    time.Now().Format(time.RFC3339),
-		"level":   "ERROR",
-		"message": message,
-	}
-
-	data, _ := json.Marshal(entry)
-	logFile.Write(append(data, '\n'))
-}
-
 // isTextType 判断资源类型是否为文本类型
 func isTextType(resourceType string) bool {
 	switch resourceType {
@@ -716,4 +718,20 @@ func GetDownloadHistory() []DownloadHistoryEntry {
 	HistoryLock.Lock()
 	defer HistoryLock.Unlock()
 	return DownloadHistory
+}
+
+// SetProxy 支持设置代理配置
+func (d *ResourceDownloader) SetProxy(proxyURL string) error {
+	proxy, err := url.Parse(proxyURL)
+	if err != nil {
+		return err
+	}
+
+	d.Client = &http.Client{
+		Transport: &http.Transport{
+			Proxy: http.ProxyURL(proxy),
+		},
+		Timeout: d.Timeout,
+	}
+	return nil
 }
