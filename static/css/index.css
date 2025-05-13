@@ -3,7 +3,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    transition: all 0.3 ease;
+    transition: all 0.3s ease;
 }
 
 body {
@@ -12,10 +12,14 @@ body {
     background-color: #f0f2f5;
     color: #333;
     padding: 20px;
-    display: flex;
+    /* display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 100vh; 
+    min-height: 100vh;  */
+}
+
+.version {
+    font-size: 0.6em;
 }
 
 .container {
@@ -25,8 +29,8 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     overflow: hidden;
-    transform: translateY(0);
-    animation: fadeInUp 0.5 ease-out; 
+    /* transform: translateY(0);
+    animation: fadeInUp 0.5s ease-out;  */
 }
 
 /* 头部样式 */
@@ -65,7 +69,7 @@ header h1 {
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 15px;
-    transition: border 0.3;
+    transition: border 0.3s;
 }
 
 .input-section input[type="text"]:focus {
@@ -100,7 +104,7 @@ header h1 {
     padding: 8px 12px;
     border-radius: 4px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: all 0.3;
+    transition: all 0.3s;
 }
 
 .file-types-list label:hover {
@@ -125,7 +129,7 @@ button {
     border-radius: 5px;
     font-size: 15px;
     cursor: pointer;
-    transition: all 0.3;
+    transition: all 0.3s;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -233,7 +237,7 @@ button {
     height: 100%;
     background-color: #3498db;
     width: 0%;
-    transition: width 0.3 ease-in-out;
+    transition: width 0.3s ease-in-out;
 }
 
 .progress-stats {
@@ -352,9 +356,9 @@ button {
 .alert-error { background-color: #e74c3c; }
 
 .task-item {
-    transition: all 0.3;
+    transition: all 0.3s;
     opacity: 0;
-    animation: fadeIn 0.3 forwards;
+    animation: fadeIn 0.3s forwards;
 }
 
 @keyframes fadeIn {
@@ -362,7 +366,8 @@ button {
     to { opacity: 1; transform: translateY(0); }
 }
 
-@keyframes fadeInUp {
+/* 垂直布局动画 */
+/* @keyframes fadeInUp {
     from {
         opacity: 0;
         transform: translateY(20px);
@@ -371,7 +376,7 @@ button {
         opacity: 1;
         transform: translateY(0);
     }
-}
+} */
 
 /* 加载动画样式 */
 .loading {
@@ -394,13 +399,96 @@ button {
     border-radius: 50%;
     width: 40px;
     height: 40px;
-    animation: spin 1 linear infinite;
+    animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+/* 嗅探资源分类统计样式 */
+.resource-count-container {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #ffffff; /* 白色背景 */
+    border-radius: 8px; /* 圆角边框 */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+}
+
+.resource-count-container h3 {
+    color: #333333; /* 标题颜色 */
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.resource-count-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.resource-count-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #e0e0e0; /* 底部边框 */
+}
+
+.resource-count-list li:last-child {
+    border-bottom: none; /* 最后一项去除底部边框 */
+}
+
+.resource-count-list li span:first-child {
+    color: #555555; /* 分类名称颜色 */
+    font-weight: 500;
+}
+
+.resource-count-list li span:last-child {
+    color: #777777; /* 数量颜色 */
+    background-color: #f5f5f5; /* 数量背景颜色 */
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+/* 页脚 */
+.app-footer {
+    background-color: #2c3e50;  /* 改为深色背景 */
+    color: #ecf0f1;  /* 浅色文字 */
+    padding: 1.5rem;
+    margin-top: 3rem;
+    border-top: none;
+    font-size: 0.875rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);  /* 添加上方阴影 */
+}
+
+.app-footer p {
+    margin: 0;
+    display: inline-block;
+    font-weight: 300;
+}
+
+.app-footer a {
+    color: #3498db;  /* 亮色链接 */
+    text-decoration: none;
+    transition: all 0.3 ease;
+    padding: 0.3rem 0.5rem;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+.app-footer a:hover {
+    color: #2980b9;
+    background-color: rgba(255,255,255,0.1);  /* 悬停背景效果 */
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+
 
 /* 历史记录样式 */
 .history-container {
