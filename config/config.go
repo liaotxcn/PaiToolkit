@@ -10,6 +10,7 @@ type AppConfig struct {
 	ServerPort    string `json:"server_port"`
 	DownloadDir   string `json:"download_dir"`
 	MaxConcurrent int    `json:"max_concurrent"`
+	ProxyURL      string `json:"proxy_url"` // 代理url
 }
 
 // LoadConfig 函数用于加载配置文件。如果配置文件不存在，则创建一个默认配置文件。
