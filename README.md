@@ -25,6 +25,9 @@
 ```bash
 git clone https://github.com/liaotxcn/PaiToolkit.git  # 克隆仓库
 ```
+```bash
+go mod tidy   # 更新依赖
+go run .\main.go 
+```
 
 ### 持续更新中...
-
