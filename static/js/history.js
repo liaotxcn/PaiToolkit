@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() { 
-    loadDownloadHistory(); 
+    ('DOMContentLoaded', () => {
+        loadDownloadHistory();
+    });
 
     async function loadDownloadHistory() { 
         try { 
