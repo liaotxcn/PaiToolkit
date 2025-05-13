@@ -1,4 +1,4 @@
-package main
+package主干
 
 import (
 	"PaiDownloader/api"
@@ -22,11 +22,12 @@ func main() {
 
 	r := gin.Default()
 
-	// 路由中间件(CORS、XSS)
+	// 路由中间件(CORS、XSS、请求频率限制)
 	r.Use(middleware.CORSMiddleware())
 	r.Use(middleware.XSSMiddleware())
+	r.Use(middleware.RateLimitMiddleware())
 
-	// 静态文件服务
+	// 静态文件
 	r.Static("/static", "./static")
 
 	// API 路由
