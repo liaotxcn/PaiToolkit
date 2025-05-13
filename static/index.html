@@ -11,7 +11,7 @@
 <body>
 <div class="container">
     <header>
-        <h1>PaiDownloader V1.0.0</h1>
+        <h1>PaiDownloader<span class="version"> v1.0.0</span></h1>
     </header>
 
     <div class="main-content">
@@ -43,8 +43,13 @@
         </div>
 
         <div class="file-list-container" id="fileListContainer">
-            <h3>检测到资源:</h3>
+            <h3>已嗅探资源:</h3>
             <ul class="file-list" id="fileList"></ul>
+        </div>
+
+        <div class="resource-count-container">
+            <h3>资源嗅探统计:</h3>
+            <ul class="resource-count-list" id="resourceCountList"></ul>
         </div>
 
         <div class="progress-container" id="progressContainer">
@@ -81,6 +86,12 @@
         <button id="cancelBtn" style="display: none;">取消下载</button>
     </div>
 </div>
+
+<footer class="app-footer">
+    <p>pai@liaotx.cn</p>
+    <p><a href="https://github.com/liaotxcn/PaiToolkit">Github</a></p>
+</footer>
+
 <script src="../static/js/index.js"></script>
 </body>
 </html>
