@@ -132,6 +132,20 @@ func LogError(logFile *os.File, message string) {
 	logFile.Write(append(data, '\n'))
 }
 
+// 结构化日志记录
+func LogStructured(logFile *os.File, level string, fields map[string]interface{}) {
+	entry := map[string]interface{}{
+		"time":  time.Now().Format(time.RFC3339),
+		"level": level,
+	}
+	for k, v := range fields {
+		entry[k] = v
+	}
+
+	data, _ := json.Marshal(entry)
+	logFile.Write(append(data, '\n'))
+}
+
 // 检查是否是文本类型
 func CheckTextType(resourceType string) bool {
 	switch resourceType {
