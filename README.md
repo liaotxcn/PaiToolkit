@@ -27,7 +27,7 @@ git clone https://github.com/liaotxcn/PaiToolkit.git  # 克隆仓库
 ```
 ```bash
 go mod tidy   # 更新依赖
-go run .\main.go 
+go run main.go 
 ```
 
 ps：资源嗅探、下载速度等受网络环境影响
