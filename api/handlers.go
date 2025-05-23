@@ -307,8 +307,8 @@ func HandleIndexPage(c *gin.Context) {
 // HandlePreviewRequest 处理资源预览请求，解析请求参数，获取网页内容并提取可下载的资源任务
 func HandlePreviewRequest(c *gin.Context) {
 	// 定义请求结构体，用于绑定请求的 JSON 数据
-	var request struct {
-		URL       string   `json:"url" binding:"required"`
+	var请求struct {
+网站string   `json:"url" binding:"required"`
 		FileTypes []string `json:"file_types"`
 	}
 
