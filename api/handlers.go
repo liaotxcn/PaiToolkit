@@ -53,7 +53,7 @@ func init() {
 
 // APIResponse 定义 API 响应的结构体，包含状态码、消息和数据
 type APIResponse struct {
-代码int         `json:"code"`
+	Code    int         `json:"code"`
 	Message string      `json:"message"`
 	Data    interface{} `json:"data"`
 }
@@ -61,11 +61,11 @@ type APIResponse struct {
 // 历史记录结构体
 // DownloadHistory 存储每次下载任务的详细信息
 type DownloadHistory struct {
-网站string    `json:"url"`
+	URL          string    `json:"url"`
 	Filename     string    `json:"filename"`
-类型string    `json:"type"`
+	Type         string    `json:"type"`
 	Size         int64     `json:"size"`
-状态string    `json:"status"`
+	Status       string    `json:"status"`
 	StartTime    time.Time `json:"start_time"`
 	EndTime      time.Time `json:"end_time"`
 	RetryCount   int       `json:"retry_count"`
@@ -80,8 +80,8 @@ type DownloadHistory struct {
 // HandleDownloadRequest 处理下载请求，解析请求参数，初始化下载任务并启动下载
 func HandleDownloadRequest(c *gin.Context) {
 	// 定义请求结构体，用于绑定请求的 JSON 数据
-	var请求struct {
-网站string   `json:"url" binding:"required"`
+	var request struct {
+		URL       string   `json:"url" binding:"required"`
 		FileTypes []string `json:"file_types"`
 		OutputDir string   `json:"output_dir"`
 	}
@@ -112,7 +112,7 @@ func HandleDownloadRequest(c *gin.Context) {
 	downloader.BaseURL = parsedURL
 
 	// 如果请求中指定了输出目录，创建该目录并更新下载器的输出目录
-	if请求.OutputDir != "" {
+	if request.OutputDir != "" {
 		if err := os.MkdirAll(request.OutputDir, 0755); err != nil {
 			// 若创建目录失败，返回错误响应
 			c.JSON(http.StatusInternalServerError, APIResponse{
