@@ -1,4 +1,4 @@
-# PaiToolkit-PaiDownloader基于Golang的资源嗅探下载器 
+# PaiToolkit-PaiDownloader Golang-based resource sniffing downloader
 
 <div align="center">  
 
